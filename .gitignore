@@ -1,3 +1,10 @@
+# Ignore all files inside the .vscode directory
+.vscode/*
+
+# BUT do not ignore extensions.json and settings.json
+!.vscode/settings.json
+!.vscode/extensions.json
+
 # Python-generated files
 __pycache__/
 *.py[oc]
