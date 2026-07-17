@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import argparse
+from prompts import system_prompt
 
 def main():
     load_dotenv()
@@ -22,7 +23,8 @@ def main():
     args = parser.parse_args()
     
     messages = [
-    {"role": "user", "content": args.user_prompt},
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": args.user_prompt},
     ]
 
     response = client.chat.completions.create(
