@@ -1,7 +1,10 @@
+import argparse
 import os
+import json
+
+from call_functions import available_functions
 from dotenv import load_dotenv
 from openai import OpenAI
-import argparse
 from prompts import system_prompt
 
 def main():
@@ -30,10 +33,20 @@ def main():
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
+        tools=available_functions,
     )
     
     if not response.usage:
         raise RuntimeError("API response appears to be malformed")
+    
+    message = response.choices[0].message
+    if message.tool_calls is not None:
+        for tool_call in message.tool_calls:
+            function_args = json.loads(tool_call.function.arguments or "{}")
+            print(f"Calling function: {tool_call.function.name}({function_args})")
+    else:
+        if args.verbose:
+            print("No function calls were triggered by the model.")
     
     if args.verbose:
         print(f"User prompt: {args.user_prompt}")
