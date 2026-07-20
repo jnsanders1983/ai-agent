@@ -2,7 +2,7 @@ import argparse
 import os
 import json
 
-from call_functions import available_functions
+from call_function import available_functions, call_function
 from dotenv import load_dotenv
 from openai import OpenAI
 from prompts import system_prompt
@@ -42,18 +42,14 @@ def main():
     message = response.choices[0].message
     if message.tool_calls is not None:
         for tool_call in message.tool_calls:
-            function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
+            result_message = call_function(tool_call, args.verbose)
+            if not result_message["content"]:
+                raise Exception(f"empty response for {tool_call.function.name}")
+            if args.verbose:
+                print(f"-> {result_message['content']}")
     else:
-        if args.verbose:
-            print("No function calls were triggered by the model.")
-    
-    if args.verbose:
-        print(f"User prompt: {args.user_prompt}")
-        print(f"Prompt tokens: {response.usage.prompt_tokens}")
-        print(f"Response tokens: {response.usage.completion_tokens}")
-    print("Response:")
-    print(response.choices[0].message.content)
+        print("Response:")
+        print(message.content)
 
 if __name__ == "__main__":
     main()
