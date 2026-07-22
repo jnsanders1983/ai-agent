@@ -1,6 +1,8 @@
 import json
 from collections.abc import Callable
 
+from config import WORKING_DIR
+
 from functions.run_python_file import schema_run_python_file
 from functions.get_files_info import schema_get_files_info
 from functions.get_file_content import schema_get_file_content
@@ -17,8 +19,6 @@ available_functions = [
     schema_write_file,
 ]
 
-WORKING_DIR = "./calculator"
-
 function_map: dict[str, Callable[..., str]] = {
     "get_file_content": get_file_content,
     "get_files_info": get_files_info,
@@ -29,7 +29,6 @@ function_map: dict[str, Callable[..., str]] = {
 def call_function(tool_call, verbose: bool = False) -> dict:
     function_name = tool_call.function.name
     function_args = json.loads(tool_call.function.arguments or "{}")
-    
     if verbose:
         print(f" - Calling function: {function_name}({function_args})")
     else: print(f" - Calling function: {function_name}")
